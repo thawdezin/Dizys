@@ -14,13 +14,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.setBody
 import io.ktor.client.utils.EmptyContent.headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.headers
 import io.ktor.http.isSuccess
+import io.ktor.util.InternalAPI
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import io.ktor.client.*
+import io.ktor.client.engine.cio.CIO
 
 @Composable
 @Preview
@@ -78,7 +82,7 @@ class AsterViewModel {
     }
 
     fun initIntro(){
-        val client = HttpClient()
+        val client = HttpClient(CIO)
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
@@ -118,7 +122,7 @@ class AsterViewModel {
         // Create a coroutine scope that is not tied to the main thread.
 
         //Log.e("STEP1","in method")
-        val client = HttpClient(){
+        val client = HttpClient(CIO){
             headers {
                 append(HttpHeaders.Accept, "application/json")
                 append(HttpHeaders.Authorization, "Bearer my-token")
@@ -130,6 +134,13 @@ class AsterViewModel {
             }
         }
 
+        val malformedRequest = """
+        GET / HTTP/1.1
+        Host: example.com
+        
+        This is an invalid request
+    """.trimIndent()
+
         // Perform 9 HTTP requests
         repeat(5) {
 
@@ -137,7 +148,9 @@ class AsterViewModel {
             CoroutineScope(Dispatchers.IO).launch {
                 for (i in 0 until 1_000_000_000) {
                     try {
-                        val response = client.get(urlString = targetUrl.value)
+                        val response = client.get(urlString = targetUrl.value) {
+                            //setBody(malformedRequest)
+                        }
                         // Handle the response here
                         //Log.i("NREQ", "Request $i completed with response: ${response.status}")
                         println("Request $i of wave $it completed with response: ${response.status}")

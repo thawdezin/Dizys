@@ -32,7 +32,9 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:2.3.4")
                 implementation("io.ktor:ktor-client-json:2.3.4")
                 implementation("io.ktor:ktor-client-serialization:2.3.4")
-                implementation("io.ktor:ktor-client-android:2.3.4")
+                //implementation("io.ktor:ktor-client-android:2.3.4")
+                implementation("io.ktor:ktor-client-cio:2.3.4")
+                //implementation("io.ktor:ktor-client-darwin:2.3.4")
 
                 implementation("io.ktor:ktor-client-core:1.6.5")
                 implementation("io.ktor:ktor-client-cio:1.6.5")
